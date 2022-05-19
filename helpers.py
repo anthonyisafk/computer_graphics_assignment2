@@ -15,3 +15,14 @@ def get_ccs_unit_vectors(c_org: np.ndarray, c_lookat: np.ndarray, c_up: np.ndarr
 	x_c = np.cross(y_c, z_c)
 
 	return x_c, y_c, z_c
+
+
+def find_out_of_bounds_vertices(verts_rast, img_h, img_w):
+	negative = np.argwhere(verts_rast < 0)[:, 0]
+	height = np.argwhere(verts_rast[:, 0] > img_w - 1)[:, 0]
+	width = np.argwhere(verts_rast[:, 1] > img_h - 1)[:, 0]
+	return np.union1d(np.union1d(height, width), negative)
+
+
+def get_in_bounds_vertices_and_faces(rejects, verts_rast, faces, vcolors):
+	verts_in = np.delete(verts_rast, rejects, 0)
