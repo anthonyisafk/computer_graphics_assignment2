@@ -1,8 +1,8 @@
-from camera import *
+from helpers import *
 import numpy as np
 import math
 
-def transform_affine(cp: np.ndarray, theta, u: np.ndarray, t: np.ndarray):
+def transform_affine(cp, theta, u, t):
 	"""
 	:param cp: the initial point
 	:param theta: the angle of rotation
@@ -75,3 +75,18 @@ def project_cam(f, cv, cx, cy, cz, p):
 def project_cam_lookat(f, c_org, c_lookat, c_up, verts3d):
 	cx, cy, cz = get_ccs_unit_vectors(c_org, c_lookat, c_up)
 	return project_cam(f, c_org, cx, cy, cz, verts3d)
+
+
+def rasterize(verts2d, img_h, img_w, cam_h, cam_w):
+	"""Matches the 2D camera projections to pixels on the canvas."""
+	scale = np.array([img_w / cam_w, img_h / cam_h]) # factors by which we scale down the x and y coordinates
+	verts_scaled = np.round(verts2d * scale)
+	offset = np.array([img_w / 2, img_h / 2]) # offset the photo to bring the bottom left coordinates to (0,0)
+	verts_rast_offset = transform_affine(verts_scaled, None, None, offset)
+	return verts_rast_offset
+
+
+def render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up):
+	verts2d, depths = project_cam_lookat(f, c_org, c_lookat, c_up, verts3d)
+	verts_rast = rasterize(verts2d, img_h, img_w, cam_h, cam_w)
+
