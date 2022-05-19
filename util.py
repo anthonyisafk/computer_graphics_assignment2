@@ -1,13 +1,4 @@
-"""
-@author: Antonios Antoniou
-@email: aantonii@ece.auth.gr
-******************************
-@brief:
-@instructions:
-******************************
-2022 Aristotle University Thessaloniki - Computer Graphics
-"""
-
+from camera import *
 import numpy as np
 import math
 
@@ -19,10 +10,10 @@ def transform_affine(cp: np.ndarray, theta, u: np.ndarray, t: np.ndarray):
 	:param t: the offset after the rotation, given as a vector
 	:return: the resulting point cq
 	"""
-	R = np.zeros((3, 3))
+	R = np.zeros((3, 3)) # matrix placeholder for the Rodrigues formula
 	cq = cp
 
-	if u is not None:
+	if u is not None and theta is not None:
 		R1 = (1 - math.cos(theta)) * np.array([
 			[u[0] ** 2, u[0] * u[1], u[0] * u[2]],
 			[u[1] * u[0], u[1] ** 2, u[1] * u[2]],
@@ -35,13 +26,13 @@ def transform_affine(cp: np.ndarray, theta, u: np.ndarray, t: np.ndarray):
 			[-1 * u[1], u[0], 0]
 		])
 		R = R1 + R2 + R3
-		cq = R.dot(cp)
+		cq = R.dot(cp.T).T
 
 	if t is not None:
-		for i in range(len(cq[0])):
-			cq[:, i] += t
+		for i in range(len(cq)):
+			cq[i] += t
 
-	return cq, R
+	return cq
 
 
 def system_transform(cp, R, c0):
@@ -56,13 +47,31 @@ def system_transform(cp, R, c0):
 	dp = RT.dot(cp)
 	return dp - c0
 
-if __name__ == "__main__":
-	cp = np.array([
-		[-0.5, 1.2, 2, 2.2, 3.2, 4.5],
-	 	[2, 2, 2, 2.2, 3.2, 4.5],
-		[2, 3, 2, 2.2, 3.2, 4.5]
-	])
-	cq, R = transform_affine(cp, math.pi / 4, np.array([1, 2, 1]), np.array([1, 2, 3]))
 
-	vq = system_transform(cq[:, 1], R, np.array([1, 0.5, 0.5]))
-	print(f"vq = {vq}")
+def project_cam(f, cv, cx, cy, cz, p):
+	"""Finds the projection of a point.
+	Uses the WCS (World Coordinate System) coordinates and turns them into
+	CCS (Camera Coordinate System) coordinates.
+
+	:param f: focal distance
+	:param cv: coordinates of the camera
+	:param cx: WCS coordinates of the CCS x unit vector
+	:param cy: WCS coordinates of the CCS y unit vector
+	:param cz: WCS coordinates of the CCS z unit vector
+	:param p: the point [3 x 1], or matrix of points, [3 x N]
+	:return: the 2D projections of the points and the respective depths
+	"""
+	R = np.stack((cx, cy, cz), axis=1) # rotation matrix based on the new unit vectors
+	n = len(p)
+	verts2d = np.zeros((n, 2))
+	depths = np.zeros(n)
+	for i in range(n):
+		p_ccs = system_transform(p[i], R, cv)
+		verts2d[i] = (f / p_ccs[2]) * p_ccs[0:2]
+		depths[i] = p_ccs[2]
+	return verts2d, depths
+
+
+def project_cam_lookat(f, c_org, c_lookat, c_up, verts3d):
+	cx, cy, cz = get_ccs_unit_vectors(c_org, c_lookat, c_up)
+	return project_cam(f, c_org, cx, cy, cz, verts3d)
