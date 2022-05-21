@@ -12,9 +12,8 @@
 """
 
 from util import *
-from camera import *
 import numpy as np
-import render
+
 
 if __name__ == "__main__":
 	data = np.load("hw2/hw2.npy", allow_pickle=True)[()]
@@ -30,22 +29,27 @@ if __name__ == "__main__":
 	phi = data['phi']
 
 	f = 70 # focal distance
-	img_w = 512 # image weight and height in pixels
+	img_w = 512 # image width and height in pixels
 	img_h = 512
-	cam_w = 15 # canvas weight and height in inches
+	cam_w = 15 # canvas width and height in inches
 	cam_h = 15
 	background = np.array([1.0, 1.0, 1.0])
 
-	# TODO: Capture snapshots between each step.
 	# 0) Original state.
+	print("Original state...\n")
+	render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
+
 	# 1) Offset by t_1.
+	print(f"Offsetting by {t_1.tolist()}...\n")
 	verts3d = transform_affine(verts3d, None, None, t_1)
+	render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
 
 	# 2) Rotate by phi around axis u
+	print(f"Rotating by {phi} radians around axis {u.tolist()}...\n")
 	verts3d = transform_affine(verts3d, phi, u, None)
+	render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
 
 	# 3) Offset by t_2
+	print(f"Offsetting by {t_2.tolist()}...")
 	verts3d = transform_affine(verts3d, None, None, t_2)
-
-
-
+	render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
