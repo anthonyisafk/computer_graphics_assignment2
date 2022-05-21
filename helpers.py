@@ -5,7 +5,7 @@ def get_ccs_unit_vectors(c_org: np.ndarray, c_lookat: np.ndarray, c_up: np.ndarr
 	where it points and which way is 'up'.
 
 	:param c_org: camera coordinates
-	:param c_lookat: the point exactly opposite from the camera
+	:param c_lookat: the point we have set at the center of the photograph.
 	:param c_up: 'up vector'
 	"""
 	c_to_center = c_lookat - c_org
