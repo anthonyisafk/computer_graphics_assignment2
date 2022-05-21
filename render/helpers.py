@@ -1,5 +1,5 @@
 from typing import Tuple
-from color import interpolate_color
+from render.color import interpolate_color
 import numpy as np
 import math
 

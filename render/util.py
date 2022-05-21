@@ -1,18 +1,19 @@
 import cv2 as cv
-from color import *
-from helpers import *
+from render.color import *
+from render.helpers import *
 
 
 def render(verts2d, faces, vcolors, depth, shade_t, M=512, N=512, refresh=False):
 	if shade_t != "flat" and shade_t != "gouraud":
 		raise Exception("\"shade_t\" can either be \"flat\" or \"gouraud\"!")
 
+	rgb_colors = np.zeros(np.shape(vcolors))
 	for i in range(len(vcolors)):
-		vcolors[i] = np.flip(vcolors[i])
+		rgb_colors[i] = np.flip(vcolors[i])
 
 	img = np.ones((M, N, 3))
 	for i in range(len(verts2d)):
-		img[int(verts2d[i, 0])][int(verts2d[i, 1])] = vcolors[i]
+		img[int(verts2d[i, 0])][int(verts2d[i, 1])] = rgb_colors[i]
 
 	triangles_num = len(faces)
 	triangle_depth = np.empty((triangles_num))
@@ -22,7 +23,7 @@ def render(verts2d, faces, vcolors, depth, shade_t, M=512, N=512, refresh=False)
 
 	if not refresh:
 		for idx in sorted_triangle_depth_idx:
-			img = shade_triangle(img, verts2d[faces[idx]], vcolors[faces[idx]], shade_t)
+			img = shade_triangle(img, verts2d[faces[idx]], rgb_colors[faces[idx]], shade_t)
 		cv.imshow(f"Rendered image with shade_t = \"{shade_t}\"", img)
 		cv.waitKey(0)
 		cv.destroyAllWindows()
