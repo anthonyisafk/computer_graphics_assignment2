@@ -1,6 +1,7 @@
 """
 @author: Antonios Antoniou
 @email: aantonii@ece.auth.gr
+@version: Python 3.7.9
 ******************************
 @brief: Reads the hw2.npy file to get info about the 3D coordinates of the vertices of the triangles
 		an image has been split into. Uses the info about the location of the camera, its center
@@ -13,6 +14,7 @@
 
 from util import *
 import numpy as np
+import cv2 as cv
 
 
 if __name__ == "__main__":
@@ -33,23 +35,30 @@ if __name__ == "__main__":
 	img_h = 512
 	cam_w = 15 # canvas width and height in inches
 	cam_h = 15
-	background = np.array([1.0, 1.0, 1.0])
 
 	# 0) Original state.
-	print("Original state...\n")
-	render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
+	print("Initial state...")
+	img = render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
+	img *= 255
+	cv.imwrite("image/0.jpg", img)
 
 	# 1) Offset by t_1.
-	print(f"Offsetting by {t_1.tolist()}...\n")
+	print(f"\nOffsetting by {t_1.tolist()}...")
 	verts3d = transform_affine(verts3d, None, None, t_1)
-	render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
+	img = render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
+	img *= 255
+	cv.imwrite("image/1.jpg", img)
 
 	# 2) Rotate by phi around axis u
-	print(f"Rotating by {phi} radians around axis {u.tolist()}...\n")
+	print(f"\nRotating by {phi} radians around axis {u.tolist()}...")
 	verts3d = transform_affine(verts3d, phi, u, None)
-	render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
+	img = render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
+	img *= 255
+	cv.imwrite("image/2.jpg", img)
 
 	# 3) Offset by t_2
-	print(f"Offsetting by {t_2.tolist()}...")
+	print(f"\nOffsetting by {t_2.tolist()}...")
 	verts3d = transform_affine(verts3d, None, None, t_2)
-	render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
+	img = render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
+	img *= 255
+	cv.imwrite("image/3.jpg", img)
