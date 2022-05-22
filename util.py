@@ -1,4 +1,5 @@
 from helpers import *
+from render.util import render
 import numpy as np
 import math
 
@@ -81,12 +82,27 @@ def rasterize(verts2d, img_h, img_w, cam_h, cam_w):
 	"""Matches the 2D camera projections to pixels on the canvas."""
 	scale = np.array([img_w / cam_w, img_h / cam_h]) # factors by which we scale down the x and y coordinates
 	verts_scaled = np.round(verts2d * scale)
-	offset = np.array([img_w / 2, img_h / 2]) # offset the photo to bring the bottom left coordinates to (0,0)
+
+	# Incorporate the elements that are out of bounds (in negative indices)
+	# They will be cropped out using render_object().
+	max_w = abs(min(verts_scaled[:, 0]))
+	max_h = abs(min(verts_scaled[:, 1]))
+	M = max_w if max_w > img_w / 2 else img_w / 2
+	N = max_h if max_h > img_h / 2 else img_h / 2
+	offset = np.array([M, N]) # offset the photo to bring the bottom left coordinates to (0,0)
 	verts_rast_offset = transform_affine(verts_scaled, None, None, offset)
-	return verts_rast_offset
+	return verts_rast_offset, M, N
 
 
 def render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up):
 	verts2d, depths = project_cam_lookat(f, c_org, c_lookat, c_up, verts3d)
-	verts_rast = rasterize(verts2d, img_h, img_w, cam_h, cam_w)
+	verts_rast, M, N = rasterize(verts2d, img_h, img_w, cam_h, cam_w)
+	max_w = max(verts_rast[:, 0])
+	max_h = max(verts_rast[:, 1])
+	crop, full_img_w, full_img_h = get_full_image_dimensions(img_w, img_h, max_w, max_h, M, N)
+	img = render(verts_rast, faces, vcolors, depths, "gouraud", int(full_img_w), int(full_img_h))
 
+	if np.any(crop > 0):
+		print(f"Cropping...")
+		return crop_image(img, crop, img_w, img_h)
+	return img
