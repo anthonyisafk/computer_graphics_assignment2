@@ -29,7 +29,7 @@ def render(verts2d, faces, vcolors, depth, shade_t, M=512, N=512, refresh=False)
 		cv.destroyAllWindows()
 	else:
 		for idx in sorted_triangle_depth_idx:
-			img = shade_triangle(img, verts2d[faces[idx]], vcolors[faces[idx]], shade_t)
+			img = shade_triangle(img, verts2d[faces[idx]], rgb_colors[faces[idx]], shade_t)
 			cv.imshow(f"Rendering image with shade_t = \"{shade_t}\"...", img)
 			cv.waitKey(1)
 		cv.destroyAllWindows()
