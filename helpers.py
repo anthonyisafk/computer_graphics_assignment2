@@ -45,3 +45,10 @@ def crop_image(img, crop, img_w, img_h):
 	cv.destroyAllWindows()
 
 	return cropped_img
+
+
+def save_image(img, img_w, img_h, filename: str):
+	for i in range(img_w):
+		for j in range(img_h):
+			img[i][j] = np.flip(img[i][j])
+	cv.imwrite(filename, img)
