@@ -8,6 +8,7 @@
 		and the up vector to match the 3D points to their 2D projections on a photograph.
 		Then 'render' (of the 1st assignment) is called to capture a snapshot of the result
 		during certain steps of the procedure.
+@notes: `render` function borrowed from Anestis Kaimakamidis - 9627.
 ******************************
 2022 Aristotle University Thessaloniki - Computer Graphics
 """
@@ -18,7 +19,7 @@ import cv2 as cv
 
 
 if __name__ == "__main__":
-	data = np.load("hw2/hw2.npy", allow_pickle=True)[()]
+	data = np.load("hw2.npy", allow_pickle=True)[()]
 	verts3d = data['verts3d']
 	vcolors = data['vcolors']
 	faces = data['faces']
@@ -38,27 +39,24 @@ if __name__ == "__main__":
 
 	# 0) Original state.
 	print("Initial state...")
-	img = render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
-	img *= 255
-	cv.imwrite("image/0.jpg", img)
+	img0 = render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
+	save_image(img0, img_w, img_h, "0.jpg")
 
 	# 1) Offset by t_1.
 	print(f"\nOffsetting by {t_1.tolist()}...")
 	verts3d = transform_affine(verts3d, None, None, t_1)
-	img = render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
-	img *= 255
-	cv.imwrite("image/1.jpg", img)
+	img1 = render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
+	save_image(img1, img_w, img_h, "1.jpg")
+
 
 	# 2) Rotate by phi around axis u
 	print(f"\nRotating by {phi} radians around axis {u.tolist()}...")
 	verts3d = transform_affine(verts3d, phi, u, None)
-	img = render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
-	img *= 255
-	cv.imwrite("image/2.jpg", img)
+	img2 = render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
+	save_image(img2, img_w, img_h, "2.jpg")
 
 	# 3) Offset by t_2
 	print(f"\nOffsetting by {t_2.tolist()}...")
 	verts3d = transform_affine(verts3d, None, None, t_2)
-	img = render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
-	img *= 255
-	cv.imwrite("image/3.jpg", img)
+	img3 = render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
+	save_image(img3, img_w, img_h, "3.jpg")
