@@ -1,5 +1,6 @@
 from helpers import *
-from render.util import render
+# from render.util import render
+from render.render_9627 import render
 import numpy as np
 import math
 
@@ -101,6 +102,9 @@ def render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org,
 	max_h = max(verts_rast[:, 1])
 	crop, full_img_w, full_img_h = get_full_image_dimensions(img_w, img_h, max_w, max_h, M, N)
 	img = render(verts_rast, faces, vcolors, depths, "gouraud", int(full_img_w), int(full_img_h))
+	cv.imshow(f"image", img)
+	cv.waitKey(0)
+	cv.destroyAllWindows()
 
 	if np.any(crop > 0):
 		print(f"Cropping...")
