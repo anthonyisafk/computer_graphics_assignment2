@@ -46,8 +46,7 @@ def system_transform(cp, R, c0):
 	:return: the resulting point after the rotation using the new coordinate system
 	"""
 	RT = np.transpose(R)
-	dp = RT.dot(cp)
-	return dp - c0
+	return RT.dot(cp - c0)
 
 
 def project_cam(f, cv, cx, cy, cz, p):
