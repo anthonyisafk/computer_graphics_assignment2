@@ -40,23 +40,23 @@ if __name__ == "__main__":
 	# 0) Original state.
 	print("Initial state...")
 	img0 = render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
-	save_image(img0, img_w, img_h, "0.jpg")
+	save_image(img0, img_w, img_h, "image/0.jpg")
 
 	# 1) Offset by t_1.
 	print(f"\nOffsetting by {t_1.tolist()}...")
 	verts3d = transform_affine(verts3d, None, None, t_1)
 	img1 = render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
-	save_image(img1, img_w, img_h, "1.jpg")
+	save_image(img1, img_w, img_h, "image/1.jpg")
 
 
 	# 2) Rotate by phi around axis u
 	print(f"\nRotating by {phi} radians around axis {u.tolist()}...")
 	verts3d = transform_affine(verts3d, phi, u, None)
 	img2 = render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
-	save_image(img2, img_w, img_h, "2.jpg")
+	save_image(img2, img_w, img_h, "image/2.jpg")
 
 	# 3) Offset by t_2
 	print(f"\nOffsetting by {t_2.tolist()}...")
 	verts3d = transform_affine(verts3d, None, None, t_2)
 	img3 = render_object(verts3d, faces, vcolors, img_h, img_w, cam_h, cam_w, f, c_org, c_lookat, c_up)
-	save_image(img3, img_w, img_h, "3.jpg")
+	save_image(img3, img_w, img_h, "image/3.jpg")
